@@ -36,11 +36,21 @@ router.post('/', (req, res) => {
 });
 
 router.put('/:id', (req, res) => {
-
+  try {
+    let data = Category.update({ where: { id: req.params.id }});
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json(error);
+  };
 });
 
-router.delete('/:id', (req, res) => {
-
+router.delete('/:id', async (req, res) => {
+  try {
+    let data = await Category.destroy({ where: { id: req.params.id }});
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json(err);
+  };
 });
 
 module.exports = router;
