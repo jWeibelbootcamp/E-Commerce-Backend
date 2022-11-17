@@ -33,8 +33,16 @@ router.post('/', (req, res) => {
   // create a new tag
   try {
     let data = Tag.create(req.body);
-    if (req.body.productIds.length ? 
-      let 
+    if (req.body.productIds.length) {
+      let newTag = req.body.productIds.map(product_id => {
+        return {
+          product_id,
+          tag_id: data.id
+        };
+      });
+      let newData = ProductTag.bulkCreate(newTag);
+      res.status(200).json(data);
+    };
   } catch (error) {
     res.status(500).json(error);
   };
@@ -44,6 +52,7 @@ router.put('/:id', async (req, res) => {
   // update a tag's name by its `id` value
   try {
     let data = await Tag.destroy({ where: {id: req.params.id }});
+    res.status(200).json(data);
   } catch (error) {
     res.status(500).json(error);
   };
