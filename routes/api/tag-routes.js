@@ -19,17 +19,18 @@ router.get('/', async (req, res) => {
 
 // get one tag
 router.get('/:id', async (req, res) => {
-  // find a single tag by its `id`
-  // be sure to include its associated Product data
-  try {
-    let data = await Tag.findOne({ 
-      include: [{ model: Product }]
-    })
-    res.status(200).json(data);
-  } catch (error) {
-    res.status(500).json(error);
-  };
-});
+  try { 
+    let data = await Tag.findOne(req.params.id, {
+    include: [{ model: Product, 
+      attributes: ['id', 'product_name', 'price', 'stock','category_id'],
+    }],
+  })
+  if (!data) {
+    res.status(400).json({ message: 'ID not found.'});
+  } res.status(200).json(data);
+} catch (error) {
+    res.status(500).json(error)
+}});
 
 // create a new tag
 router.post('/', (req, res) => {
@@ -50,20 +51,21 @@ router.post('/', (req, res) => {
   };
 });
 
-// update a tag's name by its `id` value
+// update a tag
 router.put('/:id', async (req, res) => {
   try {
-    let data = await Tag.destroy({ where: {id: req.params.id }});
-    let newTag = req.body.tag_id;
-    Tag.bulkCreate(newTag);
+    let data = await Tag.update(
+      { tag_name: req.body.tag_name},
+      { where: {id: req.params.id }}
+    );
     res.status(200).json({ message: 'Tag updated.' });
   } catch (error) {
     res.status(500).json(error);
   };
 });
 
+// delete a tag
 router.delete('/:id', (req, res) => {
-  // delete on tag by its `id` value
   try {
     let data = Tag.destroy({ where: {id: req.params.id }});
     res.status(200).json({ message: 'Tag deleted.' });
